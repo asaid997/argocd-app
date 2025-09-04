@@ -1,0 +1,16 @@
+namespace:
+  name: prod
+  team: platform
+  environment: prod
+secret:
+  greeting: "Hello World prod!"
+configMap:
+  readinessDelaySec: "15"
+  failRate: "0.3"
+resourceQuota:
+  name: kaiko-app-quota
+  pods: "20"
+  requestsCpu: "4"
+  requestsMemory: "4Gi"
+  limitsCpu: "8"
+  limitsMemory: "12Gi"

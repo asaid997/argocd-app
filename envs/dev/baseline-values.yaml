@@ -1,0 +1,16 @@
+namespace:
+  name: dev
+  team: platform
+  environment: dev
+secret:
+  greeting: "Hello World dev!"
+configMap:
+  readinessDelaySec: "15"
+  failRate: "0.3"
+resourceQuota:
+  name: kaiko-app-quota
+  pods: "4"
+  requestsCpu: "1"
+  requestsMemory: "1Gi"
+  limitsCpu: "2"
+  limitsMemory: "2Gi"
