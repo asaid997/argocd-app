@@ -12,5 +12,5 @@ helm upgrade --install kaiko-app ./charts/app-chart
 
 sleep 20
 
-kubectl port-forward svc/kaiko-app-service 8000:8000 -n kaiko-app&
 echo you can now access the application at http://localhost:8000
+kubectl port-forward svc/kaiko-app-service 8000:8000 -n kaiko-app
