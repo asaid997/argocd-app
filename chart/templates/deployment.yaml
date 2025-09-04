@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+    spec:
+        nodeSelector:
+          {{- toYaml .Values.nodeSelector | nindent 12 }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        securityContext:
+          runAsUser: {{ .Values.securityContext.runAsUser }}
+          runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        containers:
+          - name: {{ .Values.app.name }}
+            image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+              - containerPort: {{ .Values.service.targetPort }}
+            env:
+              - name: GREETING
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.secretName }}
+                    key: GREETING
+              - name: READINESS_DELAY_SEC
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ .Values.configMapName }}
+                    key: READINESS_DELAY_SEC
+              - name: FAIL_RATE
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ .Values.configMapName }}
+                    key: FAIL_RATE
+            readinessProbe:
+              httpGet:
+                path: /readyz
+                port: {{ .Values.service.targetPort }}
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              failureThreshold: 4
+            livenessProbe:
+              httpGet:
+                path: /healthz
+                port: {{ .Values.service.targetPort }}
+              initialDelaySeconds: 10
+              periodSeconds: 20
+              failureThreshold: 4
