@@ -1,0 +1,4 @@
+apiVersion: v2
+name: ns-baseline
+version: 0.1.0
+description: Baseline chart for namespace, network policy, secret, configmap, and resource quota
