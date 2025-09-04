@@ -3,7 +3,7 @@ namespace:
   team: platform
   environment: prod
 secret:
-  greeting: "Hello World prod!"
+  GREETING: "Hello World prod!"
 configMap:
   readinessDelaySec: "15"
   failRate: "0.3"
