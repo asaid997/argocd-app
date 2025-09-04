@@ -17,7 +17,7 @@ spec:
             syncWave: 2
           - chart: ns-baseline-chart
             env: dev
-            valuesFile: dv-values.yaml
+            valuesFile: dev-values.yaml
             syncWave: 1
           - chart: ns-baseline-chart
             env: prd
