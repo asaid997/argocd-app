@@ -34,7 +34,7 @@ spec:
                     key: GREETING
               - name: READINESS_DELAY_SEC
                 valueFrom:
-                  configMaiiiipKeyRef:
+                  configMapKeyRef:
                     name: {{ .Values.configMapName }}
                     key: READINESS_DELAY_SEC
               - name: FAIL_RATE
