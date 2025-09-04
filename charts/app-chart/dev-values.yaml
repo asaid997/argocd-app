@@ -3,6 +3,9 @@ namespace:
 
 replicaCount: 1
 
+service:
+  nodePort: 30081
+
 resources:
   requests:
     cpu: "50m"

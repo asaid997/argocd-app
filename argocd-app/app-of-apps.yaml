@@ -33,7 +33,7 @@ spec:
       source:
         repoURL: 'https://github.com/asaid997/argocd-app.git'
         targetRevision: master
-        path: "{{ chart }}"
+        path: charts/"{{ chart }}"
         helm:
           valueFiles:
             - "{{ valuesFile }}"

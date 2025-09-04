@@ -1,5 +1,38 @@
 # Solution
 
+## Repository Structure Overview
+
+```
+repo/
+  app/
+    server.py
+    requirements.txt
+    Dockerfile
+  argocd-app/
+    app-of-apps.yaml
+    kustomization.yaml
+  step1/
+    resources/
+      kind-config.yaml
+      pre-helm-install-configs-to-install.yaml
+    step1-spin-up.sh
+  step2-gitops/
+    argocd-seed-app.yaml
+    spin-up.sh
+  charts/
+    app-chart/
+      Chart.yaml
+      dev-values.yaml
+      prod-values.yaml
+      templates/
+        ...
+    ns-baseline-chart/
+      Chart.yaml
+      dev-values.yaml
+      prod-values.yaml
+      templates/
+        ...
+```
 
 # Step 1
 
@@ -17,7 +50,7 @@ For simplicity, I prepared a script `step1-spin-up.sh` to automate the entire se
 
 To use:
 ```sh
-bash ./step1-spin-up.sh
+bash ./step1/step1-spin-up.sh
 ```
 This will spin up everything and run `helm test` to verify the deployment.
 
@@ -32,7 +65,7 @@ This will spin up everything and run `helm test` to verify the deployment.
 **Setup Instructions:**
 1. Create the cluster:
 	```sh
-	kind create cluster --name kaiko --config resources/kind-config.yaml
+	kind create cluster --name kaiko --config step1/resources/kind-config.yaml
 	```
 	```sh
 	kubectl cluster-info --context kind-kaiko
@@ -52,7 +85,7 @@ includes:
 - ResourceQuota
 
 ```sh
-kubectl apply -f resources/pre-helm-install-configs-to-install.yaml
+kubectl apply -f step1/resources/pre-helm-install-configs-to-install.yaml
 ```
 
 None app level resource which we want to deploy before we install the app using helm
@@ -142,14 +175,21 @@ kubectl delete namespace kaiko-app
 See `app-chart/README.md` for detailed Helm chart usage, configuration options, and examples (generated via Bitnami readme-generator-for-helm or Frigate).
 
 
-
-
-
 ---
 # Step 2: GitOps with ArgoCD
 
 ## Overview
-This step implements a fully declarative, multi-environment GitOps workflow using ArgoCD and Helm.
+This step implements a fully declarative, multi environment GitOps workflow using ArgoCD and Helm.
+
+## Quick Start Script
+
+For simplicity, I prepared a script `step2-gitops/spin-up.sh` to automate the entire setup for Step 2. This script installs ArgoCD, connects to my public repo, and applies the ApplicationSet manifest for multi environment GitOps deployment.
+
+To use:
+```sh
+bash ./step2-gitops/spin-up.sh
+```
+This will set up ArgoCD, deploy all applications to dev and prd, and verify their status in the ArgoCD UI.
 
 ## ArgoCD Setup
 
@@ -169,12 +209,19 @@ This step implements a fully declarative, multi-environment GitOps workflow usin
 3. **Connect ArgoCD to your Git repository:**
    - I am using my public repository for this assignment and you are welcome to check it: https://github.com/asaid997/argocd-app
 
+4. **Deploy seed application:**
+   - Seed app that will deploy the main application set
+   ```sh
+    kubectl apply -f step2-gitops/argocd-seed-app.yaml
+   ```
+
+
 ## ApplicationSet Pattern
 
 - Used ArgoCD ApplicationSet to manage both the baseline and app Helm charts for `dev` and `prd` environments.
 - Each environment uses its own values file for environment specific configuration (e.g., resource limits, replica counts).
 
-**ApplicationSet manifest:**  
+**ApplicationSet manifest:**
 See `argocd-app/app-of-apps.yaml` for the full configuration.
 
 - The ApplicationSet generates four Applications:
@@ -184,7 +231,7 @@ See `argocd-app/app-of-apps.yaml` for the full configuration.
   - `app-chart-prd`
 - Sync waves ensure the baseline chart is deployed before the app chart in each environment.
 
-## Environment-Specific Configuration
+## Environment Specific Configuration
 
 - Each environment (`dev`, `prd`) has its own values file for each chart.
 - Example differences:
@@ -192,7 +239,7 @@ See `argocd-app/app-of-apps.yaml` for the full configuration.
   - `prd` uses higher resource limits and more replicas.
 - All configuration is DRY no manifest duplication.
 
-## Multi-Environment Management
+## Multi Environment Management
 
 - Adding a new environment is as simple as adding a new values file and an entry in the ApplicationSet.
 - The structure supports easy scaling to more environments.
@@ -202,27 +249,26 @@ See `argocd-app/app-of-apps.yaml` for the full configuration.
 - All applications are visible in the ArgoCD UI.
 - Each application shows "Healthy" and "Synced" status when deployed successfully.
 
-**Insert Screenshot 1 here:**
-_ArgoCD UI showing all applications (dev and prd)_
+![ArgoCD UI Screenshot 1](imgs/ui1.png)
+![ArgoCD UI Screenshot 2](imgs/ui2.png)
 
-**Insert Screenshot 2 here:**
-_Application details showing different configuration for dev and prd (e.g., resource limits, replicas)_
-
-## Commands for Managing ArgoCD
 
 - Access ArgoCD UI:
   ```sh
   kubectl port-forward svc/argocd-server -n argocd 8080:443
   ```
-- Sync or refresh applications from the UI or CLI:
-  ```sh
-  argocd app sync <app-name>
-  argocd app get <app-name>
-  ```
+
 
 ## Design Justification
 
-- **Helm + ApplicationSet**: Enables DRY, scalable, and declarative multi-environment management.
-- **No manifest duplication**: All environment-specific config is handled via values files.
-- **Sync waves**: Guarantee baseline resources are ready before app deployment.
+- **Helm + ApplicationSet**: Enables DRY, scalable, and declarative multi environment management.
+- **No manifest duplication**: All environment specific config is handled via values files.
 - **Easy extensibility**: Add new environments or charts with minimal changes.
+
+
+## To clean up the environment:
+
+```sh
+  kind delete cluster --name kaiko
+  docker image rm kaiko-app
+```

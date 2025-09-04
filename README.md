@@ -53,7 +53,7 @@ You may organize additional files (Kubernetes manifests, Helm charts, etc.) howe
 
 Your git repository should contain:
 1. **Kubernetes Resources**: YAML manifests, Helm charts, or Kustomize configurations for Part 1
-2. **ArgoCD Configuration**: Application definitions and setup commands for Part 2  
+2. **ArgoCD Configuration**: Application definitions and setup commands for Part 2
 3. **SOLUTION.md**: Comprehensive documentation covering:
    - How to set up and run the solution
    - Design decisions and justifications for both Kubernetes and GitOps choices
