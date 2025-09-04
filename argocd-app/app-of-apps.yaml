@@ -32,7 +32,7 @@ spec:
       project: default
       source:
         repoURL: 'https://github.com/asaid997/argocd-app.git'
-        targetRevision: HEAD
+        targetRevision: master
         chart: "{{ chart }}"
         helm:
           valueFiles:
