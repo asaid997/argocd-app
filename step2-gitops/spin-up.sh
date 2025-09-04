@@ -9,4 +9,4 @@ echo password can be retrieved by running: \''kubectl -n argocd get secret argoc
 echo run after getting the password: 'kubectl port-forward svc/argocd-server 8080:80 -n argocd'
 
 echo
-echo incase the password secret is not present then please run the script again
+echo 'incase the password secret is not present then please run the script again(more than once if needed)'
