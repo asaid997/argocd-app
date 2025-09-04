@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: charts-appset
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - chart: app-chart
+            env: dev
+            valuesFile: app-chart/dev-values.yaml
+            syncWave: "1"
+          - chart: app-chart
+            env: prd
+            valuesFile: app-chart/prod-values.yaml
+            syncWave: "1"
+          - chart: ns-baseline-chart
+            env: dev
+            valuesFile: ns-baseline-chart/dev-values.yaml
+            syncWave: "0"
+          - chart: ns-baseline-chart
+            env: prd
+            valuesFile: ns-baseline-chart/prd-values.yaml
+            syncWave: "0"
+  template:
+    metadata:
+      name: "{{ chart }}-{{ env }}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{ syncWave }}"
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/asaid997/argocd-app.git'
+        targetRevision: HEAD
+        chart: "{{ chart }}"
+        helm:
+          valueFiles:
+            - "{{ valuesFile }}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ env }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
