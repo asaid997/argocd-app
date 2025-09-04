@@ -1,6 +1,6 @@
 helm upgrade --install argocd argo/argo-cd --namespace argocd  --create-namespace
 
-sleep 120
+sleep 60
 
 kubectl apply -f step2-gitops/argocd-seed-app.yaml
 

@@ -10,6 +10,7 @@ kind load docker-image kaiko-app:latest --name kaiko
 
 helm upgrade --install kaiko-app ./charts/app-chart
 
-sleep 300
+sleep 20
 
-echo we can run \'helm test kaiko-app\'
+kubectl port-forward svc/kaiko-app-service 8000:8000 -n kaiko-app&
+echo you can now access the application at http://localhost:8000
