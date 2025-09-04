@@ -5,8 +5,8 @@ namespace:
 secret:
   GREETING: "Hello World dev!"
 configMap:
-  readinessDelaySec: "15"
-  failRate: "0.3"
+  READINESS_DELAY_SEC: "15"
+  FAIL_RATE: "0.3"
 resourceQuota:
   name: kaiko-app-quota
   pods: "4"
