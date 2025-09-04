@@ -10,19 +10,19 @@ spec:
           - chart: app-chart
             env: dev
             valuesFile: dev-values.yaml
-            syncWave: "1"
+            syncWave: 2
           - chart: app-chart
             env: prd
             valuesFile: prod-values.yaml
-            syncWave: "1"
+            syncWave: 2
           - chart: ns-baseline-chart
             env: dev
             valuesFile: dev-values.yaml
-            syncWave: "0"
+            syncWave: 1
           - chart: ns-baseline-chart
             env: prd
             valuesFile: prd-values.yaml
-            syncWave: "0"
+            syncWave: 1
   template:
     metadata:
       name: "{{ chart }}-{{ env }}"
