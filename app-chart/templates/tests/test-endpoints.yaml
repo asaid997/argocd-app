@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-ep-test"
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.app.name }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "32Mi"
+    limits:
+      cpu: "50m"
+      memory: "64Mi"
+  restartPolicy: Never
+  containers:
+    - name: curl-endpoints
+      image: curlimages/curl:latest
+      command: ["sh", "-c"]
+      args:
+        ["curl -sf http://{{ .Values.service.name }}:{{ .Values.service.port }}/healthz && \
+          curl -sf http://{{ .Values.service.name }}:{{ .Values.service.port }}/readyz && \
+          curl -sf http://{{ .Values.service.name }}:{{ .Values.service.port }}/work && \
+          curl -sf http://{{ .Values.service.name }}:{{ .Values.service.port }}/metrics"]

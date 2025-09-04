@@ -1,0 +1,22 @@
+namespace:
+  name: prod
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "500Mi"
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+
+pdb:
+  minAvailable: 2
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  cpuAverageUtilization: 50
+  memoryAverageUtilization: 70
